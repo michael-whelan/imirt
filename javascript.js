@@ -2,7 +2,7 @@
 
 var folderList=[
 	{
-		"name":"Lovers in a dangerous space",
+		"name":"Lovers in a dangerous spacetime",
 		"gwgRel":"1/1/1",
 		"platform": "xbox",
 		"origRel": "1/1/1"
@@ -49,32 +49,54 @@ function makeClickable(click, name){
   return name;
 }
 
-function getGameClick(thing){
-	console.log(thing.id);
-	//var files = fs.readdirSync("media/"+thing.id);
-	//console.log(files);
 
-	var source = "media/"+thing.id+"/text.txt";
+function getPageText(source, name){
+	//var source = "media/"+elem.id+"/text.txt";
 	var client = new XMLHttpRequest();
-client.open('GET', source);
-console.log(source);
-client.onreadystatechange = function() {
-  console.log(client.responseText);
+	client.open('GET', source);
+	client.onreadystatechange = function() {
+  	var text =client.responseText;
+  	//check off this part of loader
+  	document.getElementById("gamesHeader").innerHTML = name;
+  	document.getElementById("customText").innerHTML = text;
+  	removeElem("summaryTable_wrapper");
+	}
+	client.send();
 }
-client.send();
-	//var txt = new 
-	//var txt = file(sourceFolder+"/text";
-	//console
+
+function removeElem(id){
+	var elem = document.getElementById(id);
+  elem.parentNode.removeChild(elem);
+  return true;
 }
 
 
+function getImage(src,name){
+	var image = new Image();
+	image.src = src;
+
+  document.getElementById("bannerHolder").appendChild(image);
+}
+
+
+function getGameClick(elem){
+	var source = "media/"+elem.id+"/";
+	var name = document.getElementById(elem.id).innerHTML;
+	//start loader??
+	getPageText(source+"text.txt", name);
+
+	getImage(source+"banner.png", name+" banner");
+	//var screen1 = getImage(source+"screen1.png");
+	//var screen2 = getImage(source+"screen2.png");
+	
+	
+}
 
 function fillTable(){
 	for(var i = 0; i<folderList.length; ++i){
     var clickName = makeClickable(
     	"getGameClick(this)"
     ,folderList[i].name);
-
     summaryDataSet.push([clickName,folderList[i].platform,folderList[i].gwgRel,folderList[i].origRel]);
     }
   displaySummaryTable();
