@@ -1,20 +1,5 @@
 
 
-var folderList=[
-	{
-		"name":"Lovers in a dangerous spacetime",
-		"gwgRel":"1/1/1",
-		"platform": "xbox",
-		"origRel": "1/1/1"
-	},
-	{
-		"name":"Project Cars",
-		"gwgRel":"1/1/1",
-		"platform": "xbox",
-		"origRel": "1/1/1"	
-	}
-]
-
 var summaryDataSet = [];
 
 
@@ -48,51 +33,72 @@ function makeClickable(click, name){
   }
   return name;
 }
+var once=true;
 
-
-function getPageText(source, name){
+function getPageText(source, name,index){
 	//var source = "media/"+elem.id+"/text.txt";
 	var client = new XMLHttpRequest();
 	client.open('GET', source);
+
 	client.onreadystatechange = function() {
-  	var text =client.responseText;
-  	//check off this part of loader
-  	document.getElementById("gamesHeader").innerHTML = name;
-  	document.getElementById("customText").innerHTML = text;
-  	removeElem("summaryTable_wrapper");
+  		var text =client.responseText;
+  		//check off this part of loader
+	  	document.getElementById("customText"+index).innerHTML = text;
+	  	if (once){
+	  		removeElem("summaryTable_wrapper");
+	  		once = false;
+	  	}
 	}
 	client.send();
 }
 
 function removeElem(id){
 	var elem = document.getElementById(id);
-  elem.parentNode.removeChild(elem);
-  return true;
+  	elem.parentNode.removeChild(elem);
+  	return true;
 }
 
 
-function getImage(src,name){
+function getImage(src,holder){
+
 	var image = new Image();
-	image.src = src;
+	//image.src = src;
+	image.onload = function() {
+    	//index++;
+		document.getElementById(holder).appendChild(image);
 
-  document.getElementById("bannerHolder").appendChild(image);
+    	/*if(index < idlist.length) {
+        	loadImage(index);
+    	}*/
+	}
+	image.onerror = function(e) {
+      console.log("error: no file: "+src +" found");
+   }
+   image.src = src;
 }
-
+function loadImage(index){
+   var image = document.getElementById(idlist[index]);
+   
+   image.src = srclist[index];
+}
 
 function getGameClick(elem){
 	var source = "media/"+elem.id+"/";
 	var name = document.getElementById(elem.id).innerHTML;
 	//start loader??
-	getPageText(source+"text.txt", name);
+  	document.getElementById("gamesHeader").innerHTML = name;
 
-	getImage(source+"banner.png", name+" banner");
-	//var screen1 = getImage(source+"screen1.png");
-	//var screen2 = getImage(source+"screen2.png");
-	
-	
+	getPageText(source+"text1.txt", name,1);
+	getPageText(source+"text2.txt", name,2);
+	getPageText(source+"text3.txt", name,3);
+
+	getImage(source+"banner.png","bannerHolder");//, name+" banner"
+	getImage(source+"screen1.png","screen1Holder");
+	getImage(source+"screen2.png","screen2Holder");
+
 }
 
-function fillTable(){
+function fillTable(list){
 	for(var i = 0; i<folderList.length; ++i){
     var clickName = makeClickable(
     	"getGameClick(this)"
